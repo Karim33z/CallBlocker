@@ -27,7 +27,7 @@ class ViewController: UIViewController {
 
         // Sous-titre
         let subtitle = UILabel()
-        subtitle.text = "Bloque tous les +33 9 48 XX XX XX\n(1 000 000 numéros)"
+        subtitle.text = "Test : bloque les 10 premiers +33 9 48…\n(33948000000 → 33948000009)"
         subtitle.font = .systemFont(ofSize: 15)
         subtitle.textColor = UIColor(white: 0.6, alpha: 1)
         subtitle.textAlignment = .center
@@ -170,7 +170,7 @@ class ViewController: UIViewController {
     @objc private func blockTapped() {
         button.isEnabled = false
         spinner.startAnimating()
-        setStatus("Chargement de 1 000 000 numéros...", color: .systemYellow)
+        setStatus("Chargement de 10 numéros (test)...", color: .systemYellow)
 
         let extID = extensionBundleID()
         CXCallDirectoryManager.sharedInstance.reloadExtension(
@@ -186,7 +186,7 @@ class ViewController: UIViewController {
                         color: .systemRed
                     )
                 } else {
-                    self.setStatus("✅ 1 000 000 numéros bloqués !", color: .systemGreen)
+                    self.setStatus("✅ 10 numéros chargés (test).", color: .systemGreen)
                     self.button.setTitle("🔄 Recharger le blocage", for: .normal)
                 }
             }
