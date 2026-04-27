@@ -1,168 +1,138 @@
-//
-//  ViewController.swift
-//  CallBlocker
-//
-//  Created by Brian on 29/03/17.
-//  Copyright © 2017 BCS. All rights reserved.
-//
-
 import UIKit
-import Foundation
-import Contacts
 import CallKit
 
-let appDelegate = UIApplication.shared.delegate as! AppDelegate
+class ViewController: UIViewController {
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    
-    @IBOutlet weak var phoneTextFld: UITextField!
-    @IBOutlet weak var tblView: UITableView!
-    var refreshControl: UIRefreshControl!
-    var blockList: [String] = []
+    private let button = UIButton(type: .system)
+    private let statusLabel = UILabel()
+    private let spinner = UIActivityIndicatorView(style: .large)
 
-    // MARK: - System methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Do any additional setup after loading the view, typically from a nib.
-        self.navigationItem.title = "Call blocklist";
-        
-        // add pull down to refresh
-        refreshControl = UIRefreshControl()
-        refreshControl.attributedTitle = NSAttributedString(string: "Checking for new phone contacts")
-        refreshControl.addTarget(self, action: #selector(refreshData(_:)), for: .valueChanged)
-        self.tblView.refreshControl = refreshControl
-        
-        // show blocklist on screen
-        self.loadContacts()
+        view.backgroundColor = UIColor(red: 0.07, green: 0.07, blue: 0.10, alpha: 1)
+        setupUI()
+        checkStatus()
     }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+
+    private func setupUI() {
+        // Titre
+        let title = UILabel()
+        title.text = "☎️ Anti-Démarchage"
+        title.font = .systemFont(ofSize: 28, weight: .bold)
+        title.textColor = .white
+        title.textAlignment = .center
+        title.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(title)
+
+        // Sous-titre
+        let subtitle = UILabel()
+        subtitle.text = "Bloque tous les +33 9 48 XX XX XX\n(1 000 000 numéros)"
+        subtitle.font = .systemFont(ofSize: 15)
+        subtitle.textColor = UIColor(white: 0.6, alpha: 1)
+        subtitle.textAlignment = .center
+        subtitle.numberOfLines = 2
+        subtitle.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(subtitle)
+
+        // Bouton
+        button.setTitle("🔥 Bloquer tous ces\nfoutus +33 9 48...", for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .heavy)
+        button.titleLabel?.numberOfLines = 2
+        button.titleLabel?.textAlignment = .center
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = UIColor(red: 0.85, green: 0.15, blue: 0.15, alpha: 1)
+        button.layer.cornerRadius = 20
+        button.layer.shadowColor = UIColor(red: 0.85, green: 0.15, blue: 0.15, alpha: 0.6).cgColor
+        button.layer.shadowOffset = CGSize(width: 0, height: 6)
+        button.layer.shadowRadius = 16
+        button.layer.shadowOpacity = 1
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(blockTapped), for: .touchUpInside)
+        view.addSubview(button)
+
+        // Spinner
+        spinner.color = .white
+        spinner.hidesWhenStopped = true
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(spinner)
+
+        // Status
+        statusLabel.text = "Vérifie le statut..."
+        statusLabel.font = .systemFont(ofSize: 14)
+        statusLabel.textColor = UIColor(white: 0.5, alpha: 1)
+        statusLabel.textAlignment = .center
+        statusLabel.numberOfLines = 3
+        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(statusLabel)
+
+        NSLayoutConstraint.activate([
+            title.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            title.bottomAnchor.constraint(equalTo: subtitle.topAnchor, constant: -10),
+
+            subtitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            subtitle.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -50),
+
+            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            button.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            button.widthAnchor.constraint(equalToConstant: 280),
+            button.heightAnchor.constraint(equalToConstant: 110),
+
+            spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            spinner.topAnchor.constraint(equalTo: button.bottomAnchor, constant: 30),
+
+            statusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            statusLabel.topAnchor.constraint(equalTo: spinner.bottomAnchor, constant: 12),
+            statusLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8)
+        ])
     }
-    
-    // MARK: - Button actions
-    
-    @IBAction func blockBtnAction(_ sender: Any) {
-        
-        var tel: String = String()
-        tel = self.phoneTextFld.text!
-        if tel.count == 0 {
-            print("tel is nil")
-            return
-        }
-        if !tel.hasPrefix("+") {
-            print("Enter country dial code followed by phone number")
-            return
-        }
-        tel = tel.removeFormat()
-        
-        self.phoneTextFld.text = ""
-        self.view.endEditing(true)
-        
-        if self.blockList.contains(tel) {
-            return
-        }
-        
-        // add num to blocklist
-        self.blockList.append(tel)
-        
-        //sort blocklist in ascending order
-        self.blockList.sort()
-        
-        //reload listview
-        self.tblView.reloadData();
-        
-        // Sync user defaults with the updated blocklist
-        self.syncUD()
-    }
-    
-    
-    // MARK: - User defined methods
-    
-    @objc func refreshData(_ sender: Any) {
-        self.loadContacts()
-    }
-    
-    func syncUD() {
-        //save blocklist in userdefaults
-        appDelegate.updateBlockedContactsList(contacts: self.blockList)
-        //reload extension to update blocklist entries
-        CXCallDirectoryManager.sharedInstance.reloadExtension(withIdentifier: "com.bcs.incomingBlocker.CallDirectoryHandler", completionHandler: nil)
-    }
-    
-    func loadContacts() {
-        // Check if user granted access to fetch contacts
-        let status = CNContactStore.authorizationStatus(for: CNEntityType.contacts) as CNAuthorizationStatus
-        if status == CNAuthorizationStatus.denied || status == CNAuthorizationStatus.restricted {
-            let appDel = AppDelegate()
-            appDel.promptUserForContactAccess()
-            return
-        }
-        let contactStore = CNContactStore()
-        contactStore.requestAccess(for: .contacts, completionHandler: { (granted, error) -> Void in
-            if granted {
-                // if granted access, contacts would have been stored in user defaults
-                // so get the blocklist from user defaults
-                DispatchQueue.main.async {
-                    let blockedContacts = appDelegate.getBlockedContacts()
-                    if blockedContacts.count == 0 {
-                        CXCallDirectoryManager.sharedInstance.reloadExtension(withIdentifier: "com.bcs.incomingBlocker.CallDirectoryHandler", completionHandler: nil)
-                        return
-                    }
-                    if blockedContacts.count > 0 {
-                        // sort and display the blocklist
-                        self.blockList = blockedContacts.sorted()
-                        self.tblView.reloadData()
-                    }
+
+    private func checkStatus() {
+        CXCallDirectoryManager.sharedInstance.getEnabledStatusForExtension(
+            withIdentifier: bundleID()
+        ) { status, error in
+            DispatchQueue.main.async {
+                switch status {
+                case .enabled:
+                    self.setStatus("✅ Bloqueur actif !", color: .systemGreen)
+                    self.button.setTitle("🔄 Recharger le blocage", for: .normal)
+                case .disabled:
+                    self.setStatus("⚠️ Bloqueur désactivé\nActive-le dans Réglages > Téléphone > Blocage d'appels", color: .systemOrange)
+                default:
+                    self.setStatus("❓ Statut inconnu", color: .gray)
                 }
-            } else {
-                appDelegate.promptUserForContactAccess()
             }
-        })
-        self.refreshControl.endRefreshing()
-        
-        //reload extension to update blocklist entries
-        CXCallDirectoryManager.sharedInstance.reloadExtension(withIdentifier: "com.bcs.incomingBlocker.CallDirectoryHandler", completionHandler: nil)
-    }
-    
-    /* Function to sort the blocklist array by numerically ascending */
-    func sortArray(arrayToSort: [String])->[String] {
-        let sortedArray = arrayToSort.sorted(by:) {
-            (first, second) in
-            first.compare(second, options: .numeric) == ComparisonResult.orderedAscending
         }
-        print(sortedArray)
-        return sortedArray
     }
-    
-    // MARK: - Table view delegates & datasources
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection: Int) -> Int {
-        let number = self.blockList.count
-        return number
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.tintColor = UIColor(red: 255.0/255.0, green:102.0/255.0, blue:102.0/255.0, alpha:1.0)
-        cell.accessoryType = cell.isSelected ? .checkmark : .none
-        cell.selectionStyle = .none // to prevent cells from being "highlighted"
-        
-        let num = self.blockList[(indexPath as NSIndexPath).row]
-        cell.textLabel!.text = num
-        print("row \(indexPath.row) and item \(self.blockList[indexPath.row])")
-        return cell
-    }
-    
-    
-    public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == UITableViewCell.EditingStyle.delete {
-            self.blockList.remove(at: indexPath.row)
-            self.tblView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.automatic)
-            self.syncUD()
+
+    @objc private func blockTapped() {
+        button.isEnabled = false
+        spinner.startAnimating()
+        setStatus("Chargement de 1 000 000 numéros...", color: .systemYellow)
+
+        CXCallDirectoryManager.sharedInstance.reloadExtension(
+            withIdentifier: bundleID()
+        ) { error in
+            DispatchQueue.main.async {
+                self.spinner.stopAnimating()
+                self.button.isEnabled = true
+                if let error = error {
+                    self.setStatus("❌ Erreur : \(error.localizedDescription)\n→ Active le bloqueur dans Réglages d'abord", color: .systemRed)
+                } else {
+                    self.setStatus("✅ 1 000 000 numéros bloqués !", color: .systemGreen)
+                    self.button.setTitle("🔄 Recharger le blocage", for: .normal)
+                }
+            }
         }
+    }
+
+    private func setStatus(_ text: String, color: UIColor) {
+        statusLabel.text = text
+        statusLabel.textColor = color
+    }
+
+    private func bundleID() -> String {
+        // Bundle ID de l'extension : bundle principal + ".CallBlockerExtension"
+        let main = Bundle.main.bundleIdentifier ?? "com.example.CallBlocker"
+        return main + ".CallBlockerExtension"
     }
 }
