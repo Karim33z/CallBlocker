@@ -26,7 +26,7 @@
         <!--View Controller-->
         <scene sceneID="hcd-MP-otW">
             <objects>
-                <viewController storyboardIdentifier="ViewController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="cly-Cs-CcH" customClass="ViewController" customModule="CallBlocker" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ViewController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="cly-Cs-CcH" customModule="CallBlocker" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="R4D-DQ-SRU"/>
                         <viewControllerLayoutGuide type="bottom" id="kfr-Kc-MBH"/>
