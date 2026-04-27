@@ -1,0 +1,36 @@
+name: Build iOS App
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: List schemes
+        run: xcodebuild -project CallBlocker/CallBlocker.xcodeproj -list
+
+      - name: Build
+        run: |
+          xcodebuild clean build \
+            -project CallBlocker/CallBlocker.xcodeproj \
+            -scheme CallBlocker \
+            -configuration Release \
+            -sdk iphoneos \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            SKIP_INSTALL=NO \
+            -derivedDataPath build
+
+      - name: Package IPA
+        run: |
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/CallBlocker.app Payload/
+          zip -r CallBlocker.ipa Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: CallBlocker-IPA
+          path: CallBlocker.ipa
