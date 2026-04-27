@@ -1,18 +1,29 @@
 import Foundation
 import CallKit
 
-class CallDirectoryHandler: CXCallDirectoryProvider {
+/// Point d’entrée CallKit : doit être visible pour `NSExtensionPrincipalClass`.
+@objc(CallDirectoryHandler)
+final class CallDirectoryHandler: CXCallDirectoryProvider {
+
+    private static let lastLoadedAtKey = "CallDirectoryLastLoadedAt"
 
     override func beginRequest(with context: CXCallDirectoryExtensionContext) {
         context.delegate = self
 
-        // En mode incrémental, on ne fait rien (on a déjà tout chargé)
-        if context.isIncremental {
+        // Important : ne traiter comme « incrémental » que si une baseline a déjà été
+        // chargée dans ce sandbox d’extension. Sinon, un premier `isIncremental == true`
+        // ferait `completeRequest()` sans aucune entrée → échec d’activation dans Réglages.
+        let defaults = UserDefaults.standard
+        let hasLoadedBefore = defaults.object(forKey: Self.lastLoadedAtKey) != nil
+
+        if context.isIncremental, hasLoadedBefore {
+            // Aucun delta pour l’instant : rechargement incrémental vide = OK.
             context.completeRequest()
             return
         }
 
         addAllBlockingPhoneNumbers(to: context)
+        defaults.set(Date(), forKey: Self.lastLoadedAtKey)
         context.completeRequest()
     }
 
