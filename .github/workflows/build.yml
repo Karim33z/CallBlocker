@@ -23,10 +23,15 @@ jobs:
             SKIP_INSTALL=NO \
             -derivedDataPath build
 
+      - name: Vérifie ce qui a été buildé
+        run: find build/Build/Products/Release-iphoneos/ -maxdepth 3 -name "*.app" -o -name "*.appex" | head -20
+
       - name: Package IPA
         run: |
+          APP_PATH=$(find build/Build/Products/Release-iphoneos -name "CallBlocker.app" -not -path "*/PlugIns/*" | head -1)
+          echo "App trouvée : $APP_PATH"
           mkdir -p Payload
-          cp -r build/Build/Products/Release-iphoneos/CallBlocker.app Payload/
+          cp -r "$APP_PATH" Payload/
           zip -r CallBlocker.ipa Payload
 
       - name: Upload IPA
