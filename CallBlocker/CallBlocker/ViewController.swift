@@ -6,6 +6,7 @@ class ViewController: UIViewController {
     private let button = UIButton(type: .system)
     private let statusLabel = UILabel()
     private let spinner = UIActivityIndicatorView(style: .gray)
+    private let debugLabel = UILabel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,13 +58,20 @@ class ViewController: UIViewController {
         view.addSubview(spinner)
 
         // Status
-        statusLabel.text = "Vérifie le statut..."
         statusLabel.font = .systemFont(ofSize: 14)
         statusLabel.textColor = UIColor(white: 0.5, alpha: 1)
         statusLabel.textAlignment = .center
-        statusLabel.numberOfLines = 3
+        statusLabel.numberOfLines = 4
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(statusLabel)
+
+        // Debug (bundle ID de l'extension trouvée)
+        debugLabel.font = .systemFont(ofSize: 10)
+        debugLabel.textColor = UIColor(white: 0.3, alpha: 1)
+        debugLabel.textAlignment = .center
+        debugLabel.numberOfLines = 2
+        debugLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(debugLabel)
 
         NSLayoutConstraint.activate([
             title.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -82,13 +90,61 @@ class ViewController: UIViewController {
 
             statusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             statusLabel.topAnchor.constraint(equalTo: spinner.bottomAnchor, constant: 12),
-            statusLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8)
+            statusLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.85),
+
+            debugLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            debugLabel.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 16),
+            debugLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9)
         ])
     }
 
+    // ────────────────────────────────────────────────────────────────────────
+    // Découverte DYNAMIQUE de l'extension installée dans le .app
+    // C'est la fix critique : on ne calcule plus le bundle ID, on le lit.
+    // Sideloadly peut changer les identifiants — on trouve le bon directement.
+    // ────────────────────────────────────────────────────────────────────────
+    private func findExtensionBundleID() -> String? {
+        guard let pluginsURL = Bundle.main.builtInPlugInsURL else {
+            debugLabel.text = "⚠️ Aucun dossier PlugIns trouvé"
+            return nil
+        }
+        guard let contents = try? FileManager.default.contentsOfDirectory(
+            at: pluginsURL,
+            includingPropertiesForKeys: nil,
+            options: .skipsHiddenFiles
+        ) else {
+            debugLabel.text = "⚠️ Impossible de lire PlugIns"
+            return nil
+        }
+
+        for url in contents where url.pathExtension == "appex" {
+            if let bundle = Bundle(url: url),
+               let info = bundle.infoDictionary,
+               let ext = info["NSExtension"] as? [String: Any],
+               let point = ext["NSExtensionPointIdentifier"] as? String,
+               point == "com.apple.callkit.call-directory",
+               let bundleID = bundle.bundleIdentifier {
+                debugLabel.text = "Extension: \(bundleID)"
+                return bundleID
+            }
+        }
+        debugLabel.text = "⚠️ Extension CallKit non trouvée dans PlugIns"
+        return nil
+    }
+
+    private func extensionBundleID() -> String {
+        if let found = findExtensionBundleID() {
+            return found
+        }
+        // Fallback si la découverte échoue
+        let main = Bundle.main.bundleIdentifier ?? "com.bcs.incomingBlocker"
+        return main + ".CallDirectoryHandler"
+    }
+
     private func checkStatus() {
+        let extID = extensionBundleID()
         CXCallDirectoryManager.sharedInstance.getEnabledStatusForExtension(
-            withIdentifier: bundleID()
+            withIdentifier: extID
         ) { status, error in
             DispatchQueue.main.async {
                 switch status {
@@ -96,9 +152,16 @@ class ViewController: UIViewController {
                     self.setStatus("✅ Bloqueur actif !", color: .systemGreen)
                     self.button.setTitle("🔄 Recharger le blocage", for: .normal)
                 case .disabled:
-                    self.setStatus("⚠️ Bloqueur désactivé\nActive-le dans Réglages > Téléphone > Blocage d'appels", color: .systemOrange)
+                    self.setStatus(
+                        "⚠️ Bloqueur désactivé\n→ Réglages > Téléphone > Blocage d'appels\n→ Active « CallBlocker »",
+                        color: .systemOrange
+                    )
                 default:
-                    self.setStatus("❓ Statut inconnu", color: .gray)
+                    if let err = error {
+                        self.setStatus("❓ Statut inconnu\n(\(err.localizedDescription))", color: .gray)
+                    } else {
+                        self.setStatus("❓ Statut inconnu", color: .gray)
+                    }
                 }
             }
         }
@@ -109,14 +172,19 @@ class ViewController: UIViewController {
         spinner.startAnimating()
         setStatus("Chargement de 1 000 000 numéros...", color: .systemYellow)
 
+        let extID = extensionBundleID()
         CXCallDirectoryManager.sharedInstance.reloadExtension(
-            withIdentifier: bundleID()
+            withIdentifier: extID
         ) { error in
             DispatchQueue.main.async {
                 self.spinner.stopAnimating()
                 self.button.isEnabled = true
                 if let error = error {
-                    self.setStatus("❌ Erreur : \(error.localizedDescription)\n→ Active le bloqueur dans Réglages d'abord", color: .systemRed)
+                    let nsErr = error as NSError
+                    self.setStatus(
+                        "❌ Erreur (code \(nsErr.code))\n→ Active d'abord le bloqueur dans Réglages > Téléphone > Blocage d'appels",
+                        color: .systemRed
+                    )
                 } else {
                     self.setStatus("✅ 1 000 000 numéros bloqués !", color: .systemGreen)
                     self.button.setTitle("🔄 Recharger le blocage", for: .normal)
@@ -128,10 +196,5 @@ class ViewController: UIViewController {
     private func setStatus(_ text: String, color: UIColor) {
         statusLabel.text = text
         statusLabel.textColor = color
-    }
-
-    private func bundleID() -> String {
-        let main = Bundle.main.bundleIdentifier ?? "com.example.CallBlocker"
-        return main + ".CallDirectoryHandler"
     }
 }

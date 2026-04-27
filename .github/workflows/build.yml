@@ -14,7 +14,7 @@ jobs:
       - name: List schemes
         run: xcodebuild -project CallBlocker/CallBlocker.xcodeproj -list
 
-      - name: Build (ad-hoc signing)
+      - name: Build
         run: |
           xcodebuild clean build \
             -project CallBlocker/CallBlocker.xcodeproj \
@@ -28,25 +28,39 @@ jobs:
             DEVELOPMENT_TEAM="" \
             PROVISIONING_PROFILE="" \
             PROVISIONING_PROFILE_SPECIFIER="" \
-            SKIP_INSTALL=NO \
-            -derivedDataPath build
+            -derivedDataPath build \
+            2>&1 | tail -50
 
       - name: Vérifie extension embarquée
         run: |
           APP_PATH=$(find build/Build/Products/Release-iphoneos -name "CallBlocker.app" -not -path "*/PlugIns/*" | head -1)
-          echo "=== Contenu du .app ==="
-          find "$APP_PATH" -maxdepth 3 | sort
+          echo "App : $APP_PATH"
           echo ""
-          echo "=== Vérifie signature extension ==="
-          codesign -dv "$APP_PATH/PlugIns/CallDirectoryHandler.appex" 2>&1 || echo "Extension non signée !"
+          echo "=== Contenu complet du .app ==="
+          find "$APP_PATH" | sort
+          echo ""
+          echo "=== Info.plist de l'extension (vérifie NSExtensionPrincipalClass) ==="
+          plutil -p "$APP_PATH/PlugIns/CallDirectoryHandler.appex/Info.plist" 2>/dev/null || echo "Extension .appex introuvable !"
+          echo ""
+          echo "=== Bundle IDs ==="
+          echo "App principale : $(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP_PATH/Info.plist")"
+          echo "Extension      : $(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP_PATH/PlugIns/CallDirectoryHandler.appex/Info.plist" 2>/dev/null || echo "INTROUVABLE")"
 
       - name: Package IPA
         run: |
           APP_PATH=$(find build/Build/Products/Release-iphoneos -name "CallBlocker.app" -not -path "*/PlugIns/*" | head -1)
-          echo "App trouvée : $APP_PATH"
+          echo "Packaging : $APP_PATH"
           mkdir -p Payload
           cp -r "$APP_PATH" Payload/
+          # Vérifie que l'extension est bien dans le Payload
+          if [ -d "Payload/CallBlocker.app/PlugIns/CallDirectoryHandler.appex" ]; then
+            echo "✅ Extension présente dans le Payload"
+          else
+            echo "❌ Extension ABSENTE du Payload — problème de build !"
+            exit 1
+          fi
           zip -r CallBlocker.ipa Payload
+          echo "IPA créée avec succès"
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
