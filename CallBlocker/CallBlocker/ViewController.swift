@@ -131,8 +131,7 @@ class ViewController: UIViewController {
     }
 
     private func bundleID() -> String {
-        // Bundle ID de l'extension : bundle principal + ".CallBlockerExtension"
         let main = Bundle.main.bundleIdentifier ?? "com.example.CallBlocker"
-        return main + ".CallBlockerExtension"
+        return main + ".CallDirectoryHandler"
     }
 }
