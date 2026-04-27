@@ -13,7 +13,7 @@
 		D373732C1E8BE8130045FC44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D373732B1E8BE8130045FC44 /* Assets.xcassets */; };
 		D373732F1E8BE8130045FC44 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D373732D1E8BE8130045FC44 /* LaunchScreen.storyboard */; };
 		D373733D1E8BE8630045FC44 /* CallDirectoryHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D373733C1E8BE8630045FC44 /* CallDirectoryHandler.swift */; };
-		D37373411E8BE8630045FC44 /* CallDirectoryHandler.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = D373733A1E8BE8630045FC44 /* CallDirectoryHandler.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D37373411E8BE8630045FC44 /* CallDirectoryHandler.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = D373733A1E8BE8630045FC44 /* CallDirectoryHandler.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -166,16 +166,14 @@
 				TargetAttributes = {
 					D37373201E8BE8120045FC44 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 95A7ALCK8R;
-						ProvisioningStyle = Automatic;
+							ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 
 						};
 					};
 					D37373391E8BE8630045FC44 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 95A7ALCK8R;
-						ProvisioningStyle = Automatic;
+							ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 						};
 					};
@@ -386,9 +384,9 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 95A7ALCK8R;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = CallBlocker/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bcs.incomingBlocker;
@@ -404,9 +402,9 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 95A7ALCK8R;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = CallBlocker/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bcs.incomingBlocker;
@@ -420,9 +418,9 @@
 		D37373431E8BE8630045FC44 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 95A7ALCK8R;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = CallDirectoryHandler/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bcs.incomingBlocker.CallDirectoryHandler;
@@ -437,9 +435,9 @@
 		D37373441E8BE8630045FC44 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 95A7ALCK8R;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = CallDirectoryHandler/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bcs.incomingBlocker.CallDirectoryHandler;
