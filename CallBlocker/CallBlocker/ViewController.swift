@@ -5,7 +5,7 @@ class ViewController: UIViewController {
 
     private let button = UIButton(type: .system)
     private let statusLabel = UILabel()
-    private let spinner = UIActivityIndicatorView(style: .large)
+    private let spinner = UIActivityIndicatorView(style: .gray)
 
     override func viewDidLoad() {
         super.viewDidLoad()
