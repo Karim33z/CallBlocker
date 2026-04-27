@@ -3,6 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>com.apple.developer.callkit.call-directory</key>
-	<true/>
+	<dict>
+		<key>call-blocking</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

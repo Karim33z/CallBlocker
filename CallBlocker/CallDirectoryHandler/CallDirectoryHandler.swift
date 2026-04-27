@@ -1,9 +1,7 @@
 import Foundation
 import CallKit
 
-/// Point d’entrée CallKit : doit être visible pour `NSExtensionPrincipalClass`.
-@objc(CallDirectoryHandler)
-final class CallDirectoryHandler: CXCallDirectoryProvider {
+class CallDirectoryHandler: CXCallDirectoryProvider {
 
     private static let lastLoadedAtKey = "CallDirectoryLastLoadedAt"
 
