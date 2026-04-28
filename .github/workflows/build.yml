@@ -28,39 +28,31 @@ jobs:
             DEVELOPMENT_TEAM="" \
             PROVISIONING_PROFILE="" \
             PROVISIONING_PROFILE_SPECIFIER="" \
-            -derivedDataPath build \
-            2>&1 | tail -50
+            -derivedDataPath build
 
-      - name: Vérifie extension embarquée
+      - name: Vérification de l'extension
         run: |
           APP_PATH=$(find build/Build/Products/Release-iphoneos -name "CallBlocker.app" -not -path "*/PlugIns/*" | head -1)
           echo "App : $APP_PATH"
-          echo ""
-          echo "=== Contenu complet du .app ==="
+          echo "=== Contenu ==="
           find "$APP_PATH" | sort
-          echo ""
-          echo "=== Info.plist de l'extension (vérifie NSExtensionPrincipalClass) ==="
-          plutil -p "$APP_PATH/PlugIns/CallDirectoryHandler.appex/Info.plist" 2>/dev/null || echo "Extension .appex introuvable !"
-          echo ""
-          echo "=== Bundle IDs ==="
-          echo "App principale : $(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP_PATH/Info.plist")"
-          echo "Extension      : $(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP_PATH/PlugIns/CallDirectoryHandler.appex/Info.plist" 2>/dev/null || echo "INTROUVABLE")"
+          echo "=== Info.plist extension ==="
+          plutil -p "$APP_PATH/PlugIns/CallDirectoryHandler.appex/Info.plist" 2>/dev/null || echo "Extension introuvable !"
+          echo "=== NSExtensionPrincipalClass ==="
+          /usr/libexec/PlistBuddy -c "Print NSExtension:NSExtensionPrincipalClass" "$APP_PATH/PlugIns/CallDirectoryHandler.appex/Info.plist" 2>/dev/null || echo "Clé introuvable"
 
       - name: Package IPA
         run: |
           APP_PATH=$(find build/Build/Products/Release-iphoneos -name "CallBlocker.app" -not -path "*/PlugIns/*" | head -1)
-          echo "Packaging : $APP_PATH"
           mkdir -p Payload
           cp -r "$APP_PATH" Payload/
-          # Vérifie que l'extension est bien dans le Payload
           if [ -d "Payload/CallBlocker.app/PlugIns/CallDirectoryHandler.appex" ]; then
             echo "✅ Extension présente dans le Payload"
           else
-            echo "❌ Extension ABSENTE du Payload — problème de build !"
+            echo "❌ Extension ABSENTE — erreur de build !"
             exit 1
           fi
           zip -r CallBlocker.ipa Payload
-          echo "IPA créée avec succès"
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
