@@ -12,12 +12,12 @@ jobs:
         run: xcodebuild -version
 
       - name: List schemes
-        run: xcodebuild -project AntiSpam/AntiSpam.xcodeproj -list
+        run: xcodebuild -project AntiSpam.xcodeproj -list
 
       - name: Build
         run: |
           xcodebuild clean build \
-            -project AntiSpam/AntiSpam.xcodeproj \
+            -project AntiSpam.xcodeproj \
             -scheme AntiSpam \
             -configuration Release \
             -sdk iphoneos \
