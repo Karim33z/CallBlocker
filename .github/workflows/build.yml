@@ -1,4 +1,4 @@
-name: Build iOS App
+name: Build AntiSpam IPA
 on: [push]
 
 jobs:
@@ -12,58 +12,40 @@ jobs:
         run: xcodebuild -version
 
       - name: List schemes
-        run: xcodebuild -project CallBlocker/CallBlocker.xcodeproj -list
+        run: xcodebuild -project AntiSpam/AntiSpam.xcodeproj -list
 
       - name: Build
         run: |
           xcodebuild clean build \
-            -project CallBlocker/CallBlocker.xcodeproj \
-            -scheme CallBlocker \
+            -project AntiSpam/AntiSpam.xcodeproj \
+            -scheme AntiSpam \
             -configuration Release \
             -sdk iphoneos \
             CODE_SIGN_IDENTITY="-" \
-            CODE_SIGNING_REQUIRED=YES \
-            CODE_SIGNING_ALLOWED=YES \
-            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
             DEVELOPMENT_TEAM="" \
             PROVISIONING_PROFILE="" \
             PROVISIONING_PROFILE_SPECIFIER="" \
             -derivedDataPath build
 
-      - name: Vérification critique
+      - name: Vérifie le build
         run: |
-          APP_PATH=$(find build/Build/Products/Release-iphoneos -name "CallBlocker.app" -not -path "*/PlugIns/*" | head -1)
-          echo "✅ App : $APP_PATH"
-          APPEX="$APP_PATH/PlugIns/CallDirectoryHandler.appex"
-          if [ -d "$APPEX" ]; then
-            echo "✅ Extension présente"
-          else
-            echo "❌ Extension ABSENTE"
-            exit 1
-          fi
-          echo ""
-          echo "=== NSExtensionPrincipalClass (DOIT être 'CallDirectoryHandler') ==="
-          /usr/libexec/PlistBuddy -c "Print NSExtension:NSExtensionPrincipalClass" "$APPEX/Info.plist"
-          echo ""
-          echo "=== NSExtensionPointIdentifier ==="
-          /usr/libexec/PlistBuddy -c "Print NSExtension:NSExtensionPointIdentifier" "$APPEX/Info.plist"
-          echo ""
-          echo "=== Bundle IDs ==="
-          echo "App  : $(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$APP_PATH/Info.plist")"
-          echo "Ext  : $(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$APPEX/Info.plist")"
-          echo ""
-          echo "=== Entitlements de l'extension (codesign) ==="
-          codesign -d --entitlements :- "$APPEX" 2>/dev/null || echo "(aucun entitlement)"
+          APP=$(find build/Build/Products/Release-iphoneos -name "AntiSpam.app" | head -1)
+          echo "App : $APP"
+          ls -la "$APP"
 
       - name: Package IPA
         run: |
-          APP_PATH=$(find build/Build/Products/Release-iphoneos -name "CallBlocker.app" -not -path "*/PlugIns/*" | head -1)
+          APP=$(find build/Build/Products/Release-iphoneos -name "AntiSpam.app" | head -1)
           mkdir -p Payload
-          cp -r "$APP_PATH" Payload/
-          zip -r CallBlocker.ipa Payload
+          cp -r "$APP" Payload/
+          zip -r AntiSpam.ipa Payload
+          echo "✅ IPA créée"
+          ls -lh AntiSpam.ipa
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: CallBlocker-IPA
-          path: CallBlocker.ipa
+          name: AntiSpam-IPA
+          path: AntiSpam.ipa
