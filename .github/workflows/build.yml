@@ -4,7 +4,6 @@ on: [push]
 jobs:
   build:
     runs-on: macos-15
-
     steps:
       - uses: actions/checkout@v4
 
@@ -29,19 +28,13 @@ jobs:
             PROVISIONING_PROFILE_SPECIFIER="" \
             -derivedDataPath build
 
-      - name: Vérifie le build
-        run: |
-          APP=$(find build/Build/Products/Release-iphoneos -name "AntiSpam.app" | head -1)
-          echo "App : $APP"
-          ls -la "$APP"
-
       - name: Package IPA
         run: |
           APP=$(find build/Build/Products/Release-iphoneos -name "AntiSpam.app" | head -1)
+          echo "App trouvée : $APP"
           mkdir -p Payload
           cp -r "$APP" Payload/
           zip -r AntiSpam.ipa Payload
-          echo "✅ IPA créée"
           ls -lh AntiSpam.ipa
 
       - name: Upload IPA

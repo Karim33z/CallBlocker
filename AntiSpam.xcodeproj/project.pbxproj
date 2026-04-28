@@ -1,146 +1,100 @@
 // !$*UTF8*$!
 {
 	archiveVersion = 1;
-	classes = {
-	};
+	classes = {};
 	objectVersion = 56;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		AA01 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA01 /* AppDelegate.swift */; };
-		AA02 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA02 /* ViewController.swift */; };
-		AA03 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA03 /* Main.storyboard */; };
-		AA04 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA04 /* Assets.xcassets */; };
-		AA05 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA05 /* LaunchScreen.storyboard */; };
-/* End PBXBuildFile section */
+/* PBXBuildFile */
+		AA01 = {isa = PBXBuildFile; fileRef = FA01; };
+		AA02 = {isa = PBXBuildFile; fileRef = FA02; };
+		AA04 = {isa = PBXBuildFile; fileRef = FA04; };
 
-/* Begin PBXFileReference section */
-		FA00 /* AntiSpam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AntiSpam.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA01 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		FA02 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		FA03 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		FA04 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		FA05 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		FA06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-/* End PBXFileReference section */
+/* PBXFileReference */
+		FA00 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AntiSpam.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA01 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		FA02 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		FA04 = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FA06 = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 
-/* Begin PBXFrameworksBuildPhase section */
-		FB01 /* Frameworks */ = {
+/* PBXFrameworksBuildPhase */
+		FB01 = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = ();
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXFrameworksBuildPhase section */
 
-/* Begin PBXGroup section */
-		FC00 /* = */ = {
+/* PBXGroup */
+		FC00 = {
 			isa = PBXGroup;
-			children = (
-				FC01 /* AntiSpam */,
-				FC02 /* Products */,
-			);
+			children = (FC01, FC02);
 			sourceTree = "<group>";
 		};
-		FC01 /* AntiSpam */ = {
+		FC01 = {
 			isa = PBXGroup;
-			children = (
-				FA01 /* AppDelegate.swift */,
-				FA02 /* ViewController.swift */,
-				FA03 /* Main.storyboard */,
-				FA05 /* LaunchScreen.storyboard */,
-				FA04 /* Assets.xcassets */,
-				FA06 /* Info.plist */,
-			);
+			children = (FA01, FA02, FA04, FA06);
 			path = AntiSpam;
 			sourceTree = "<group>";
 		};
-		FC02 /* Products */ = {
+		FC02 = {
 			isa = PBXGroup;
-			children = (
-				FA00 /* AntiSpam.app */,
-			);
+			children = (FA00);
 			name = Products;
 			sourceTree = "<group>";
 		};
-/* End PBXGroup section */
 
-/* Begin PBXNativeTarget section */
-		FD00 /* AntiSpam */ = {
+/* PBXNativeTarget */
+		FD00 = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FE01 /* Build configuration list for PBXNativeTarget "AntiSpam" */;
-			buildPhases = (
-				FB02 /* Sources */,
-				FB01 /* Frameworks */,
-				FB03 /* Resources */,
-			);
+			buildConfigurationList = FE01;
+			buildPhases = (FB02, FB01, FB03);
 			buildRules = ();
 			dependencies = ();
 			name = AntiSpam;
 			productName = AntiSpam;
-			productReference = FA00 /* AntiSpam.app */;
+			productReference = FA00;
 			productType = "com.apple.product-type.application";
 		};
-/* End PBXNativeTarget section */
 
-/* Begin PBXProject section */
-		FD01 /* Project object */ = {
+/* PBXProject */
+		FD01 = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
-				TargetAttributes = {
-					FD00 = {
-						CreatedOnToolsVersion = 15.0;
-					};
-				};
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
 			};
-			buildConfigurationList = FE00 /* Build configuration list for PBXProject "AntiSpam" */;
+			buildConfigurationList = FE00;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = fr;
 			hasScannedForEncodings = 0;
-			knownRegions = (
-				fr,
-				Base,
-			);
+			knownRegions = (fr, en);
 			mainGroup = FC00;
-			productRefGroup = FC02 /* Products */;
+			productRefGroup = FC02;
 			projectDirPath = "";
 			projectRoot = "";
-			targets = (
-				FD00 /* AntiSpam */,
-			);
+			targets = (FD00);
 		};
-/* End PBXProject section */
 
-/* Begin PBXResourcesBuildPhase section */
-		FB03 /* Resources */ = {
+/* PBXResourcesBuildPhase */
+		FB03 = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (
-				AA03 /* Main.storyboard in Resources */,
-				AA04 /* Assets.xcassets in Resources */,
-				AA05 /* LaunchScreen.storyboard in Resources */,
-			);
+			files = (AA04);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXResourcesBuildPhase section */
 
-/* Begin PBXSourcesBuildPhase section */
-		FB02 /* Sources */ = {
+/* PBXSourcesBuildPhase */
+		FB02 = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (
-				AA01 /* AppDelegate.swift in Sources */,
-				AA02 /* ViewController.swift in Sources */,
-			);
+			files = (AA01, AA02);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXSourcesBuildPhase section */
 
-/* Begin XCBuildConfiguration section */
-		FF01 /* Debug */ = {
+/* XCBuildConfiguration */
+		FF01 = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -149,10 +103,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("DEBUG=1", "$(inherited)");
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -161,7 +112,7 @@
 			};
 			name = Debug;
 		};
-		FF02 /* Release */ = {
+		FF02 = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -179,7 +130,7 @@
 			};
 			name = Release;
 		};
-		FF03 /* Debug target */ = {
+		FF03 = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -198,7 +149,7 @@
 			};
 			name = Debug;
 		};
-		FF04 /* Release target */ = {
+		FF04 = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -217,29 +168,21 @@
 			};
 			name = Release;
 		};
-/* End XCBuildConfiguration section */
 
-/* Begin XCConfigurationList section */
-		FE00 /* Build configuration list for PBXProject "AntiSpam" */ = {
+/* XCConfigurationList */
+		FE00 = {
 			isa = XCConfigurationList;
-			buildConfigurations = (
-				FF01 /* Debug */,
-				FF02 /* Release */,
-			);
+			buildConfigurations = (FF01, FF02);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FE01 /* Build configuration list for PBXNativeTarget "AntiSpam" */ = {
+		FE01 = {
 			isa = XCConfigurationList;
-			buildConfigurations = (
-				FF03 /* Debug target */,
-				FF04 /* Release target */,
-			);
+			buildConfigurations = (FF03, FF04);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-/* End XCConfigurationList section */
 
 	};
-	rootObject = FD01 /* Project object */;
+	rootObject = FD01;
 }
