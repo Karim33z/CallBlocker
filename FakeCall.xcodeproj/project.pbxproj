@@ -5,66 +5,42 @@
 	objectVersion = 56;
 	objects = {
 
-/* PBXBuildFile */
 		AA01 = {isa = PBXBuildFile; fileRef = FA01; };
 		AA02 = {isa = PBXBuildFile; fileRef = FA02; };
+		AA03 = {isa = PBXBuildFile; fileRef = FA03; };
 		AA04 = {isa = PBXBuildFile; fileRef = FA04; };
 
-/* PBXFileReference */
-		FA00 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AntiSpam.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA00 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FakeCall.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA01 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		FA02 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		FA02 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupViewController.swift; sourceTree = "<group>"; };
+		FA03 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallViewController.swift; sourceTree = "<group>"; };
+		FA05 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallInProgressViewController.swift; sourceTree = "<group>"; };
 		FA04 = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FA06 = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 
-/* PBXFrameworksBuildPhase */
-		FB01 = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = ();
-			runOnlyForDeploymentPostprocessing = 0;
-		};
+		AA05 = {isa = PBXBuildFile; fileRef = FA05; };
 
-/* PBXGroup */
-		FC00 = {
-			isa = PBXGroup;
-			children = (FC01, FC02);
-			sourceTree = "<group>";
-		};
-		FC01 = {
-			isa = PBXGroup;
-			children = (FA01, FA02, FA04, FA06);
-			path = AntiSpam;
-			sourceTree = "<group>";
-		};
-		FC02 = {
-			isa = PBXGroup;
-			children = (FA00);
-			name = Products;
-			sourceTree = "<group>";
-		};
+		FB01 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 
-/* PBXNativeTarget */
+		FC00 = {isa = PBXGroup; children = (FC01, FC02); sourceTree = "<group>"; };
+		FC01 = {isa = PBXGroup; children = (FA01, FA02, FA03, FA05, FA04, FA06); path = FakeCall; sourceTree = "<group>"; };
+		FC02 = {isa = PBXGroup; children = (FA00); name = Products; sourceTree = "<group>"; };
+
 		FD00 = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FE01;
 			buildPhases = (FB02, FB01, FB03);
 			buildRules = ();
 			dependencies = ();
-			name = AntiSpam;
-			productName = AntiSpam;
+			name = FakeCall;
+			productName = FakeCall;
 			productReference = FA00;
 			productType = "com.apple.product-type.application";
 		};
 
-/* PBXProject */
 		FD01 = {
 			isa = PBXProject;
-			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1600;
-				LastUpgradeCheck = 1600;
-			};
+			attributes = {BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 1600; LastUpgradeCheck = 1600;};
 			buildConfigurationList = FE00;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = fr;
@@ -77,23 +53,9 @@
 			targets = (FD00);
 		};
 
-/* PBXResourcesBuildPhase */
-		FB03 = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (AA04);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
+		FB03 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (AA04); runOnlyForDeploymentPostprocessing = 0; };
+		FB02 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (AA01, AA02, AA03, AA05); runOnlyForDeploymentPostprocessing = 0; };
 
-/* PBXSourcesBuildPhase */
-		FB02 = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (AA01, AA02);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-
-/* XCBuildConfiguration */
 		FF01 = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -137,10 +99,10 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				INFOPLIST_FILE = AntiSpam/Info.plist;
+				INFOPLIST_FILE = FakeCall/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
-				PRODUCT_BUNDLE_IDENTIFIER = com.antispam.vcf;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fakecall.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -156,10 +118,10 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				INFOPLIST_FILE = AntiSpam/Info.plist;
+				INFOPLIST_FILE = FakeCall/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
-				PRODUCT_BUNDLE_IDENTIFIER = com.antispam.vcf;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fakecall.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -169,20 +131,8 @@
 			name = Release;
 		};
 
-/* XCConfigurationList */
-		FE00 = {
-			isa = XCConfigurationList;
-			buildConfigurations = (FF01, FF02);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		FE01 = {
-			isa = XCConfigurationList;
-			buildConfigurations = (FF03, FF04);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-
+		FE00 = {isa = XCConfigurationList; buildConfigurations = (FF01, FF02); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;};
+		FE01 = {isa = XCConfigurationList; buildConfigurations = (FF03, FF04); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;};
 	};
 	rootObject = FD01;
 }

@@ -1,4 +1,4 @@
-name: Build AntiSpam IPA
+name: Build FakeCall IPA
 on: [push]
 
 jobs:
@@ -11,13 +11,13 @@ jobs:
         run: xcodebuild -version
 
       - name: List schemes
-        run: xcodebuild -project AntiSpam.xcodeproj -list
+        run: xcodebuild -project FakeCall.xcodeproj -list
 
       - name: Build
         run: |
           xcodebuild clean build \
-            -project AntiSpam.xcodeproj \
-            -scheme AntiSpam \
+            -project FakeCall.xcodeproj \
+            -scheme FakeCall \
             -configuration Release \
             -sdk iphoneos \
             CODE_SIGN_IDENTITY="-" \
@@ -30,15 +30,15 @@ jobs:
 
       - name: Package IPA
         run: |
-          APP=$(find build/Build/Products/Release-iphoneos -name "AntiSpam.app" | head -1)
-          echo "App trouvée : $APP"
+          APP=$(find build/Build/Products/Release-iphoneos -name "FakeCall.app" | head -1)
+          echo "App : $APP"
           mkdir -p Payload
           cp -r "$APP" Payload/
-          zip -r AntiSpam.ipa Payload
-          ls -lh AntiSpam.ipa
+          zip -r FakeCall.ipa Payload
+          ls -lh FakeCall.ipa
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: AntiSpam-IPA
-          path: AntiSpam.ipa
+          name: FakeCall-IPA
+          path: FakeCall.ipa
