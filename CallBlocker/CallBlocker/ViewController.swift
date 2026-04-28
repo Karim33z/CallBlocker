@@ -6,7 +6,7 @@ class ViewController: UIViewController {
     private let button = UIButton(type: .system)
     private let statusLabel = UILabel()
     private let spinner = UIActivityIndicatorView(style: .gray)
-    private let progressLabel = UILabel()
+    private let debugLabel = UILabel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +25,7 @@ class ViewController: UIViewController {
         view.addSubview(title)
 
         let subtitle = UILabel()
-        subtitle.text = "Bloque tous les +33 9 48 XX XX XX\n(1 000 000 numéros)"
+        subtitle.text = "Bloque les +33 9 48 XX XX XX\n(1000 numéros - phase test)"
         subtitle.font = .systemFont(ofSize: 15)
         subtitle.textColor = UIColor(white: 0.6, alpha: 1)
         subtitle.textAlignment = .center
@@ -56,16 +56,17 @@ class ViewController: UIViewController {
         statusLabel.font = .systemFont(ofSize: 14)
         statusLabel.textColor = UIColor(white: 0.5, alpha: 1)
         statusLabel.textAlignment = .center
-        statusLabel.numberOfLines = 4
+        statusLabel.numberOfLines = 5
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(statusLabel)
 
-        progressLabel.font = .systemFont(ofSize: 11)
-        progressLabel.textColor = UIColor(white: 0.35, alpha: 1)
-        progressLabel.textAlignment = .center
-        progressLabel.numberOfLines = 2
-        progressLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(progressLabel)
+        // Label de debug : affiche le bundle ID de l'extension trouvée
+        debugLabel.font = .monospacedSystemFont(ofSize: 9, size: 9)
+        debugLabel.textColor = UIColor(white: 0.3, alpha: 1)
+        debugLabel.textAlignment = .center
+        debugLabel.numberOfLines = 3
+        debugLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(debugLabel)
 
         NSLayoutConstraint.activate([
             title.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -80,21 +81,21 @@ class ViewController: UIViewController {
             button.heightAnchor.constraint(equalToConstant: 110),
 
             spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            spinner.topAnchor.constraint(equalTo: button.bottomAnchor, constant: 30),
+            spinner.topAnchor.constraint(equalTo: button.bottomAnchor, constant: 24),
 
             statusLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            statusLabel.topAnchor.constraint(equalTo: spinner.bottomAnchor, constant: 12),
+            statusLabel.topAnchor.constraint(equalTo: spinner.bottomAnchor, constant: 10),
             statusLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.85),
 
-            progressLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            progressLabel.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 10),
-            progressLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9)
+            debugLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            debugLabel.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 16),
+            debugLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.95)
         ])
     }
 
     private func extensionBundleID() -> String {
-        // Découverte dynamique de l'extension dans le .app
-        // Sideloadly peut changer les bundle IDs — on lit directement dans PlugIns/
+        // Cherche le .appex dans PlugIns et lit son bundle ID directement
+        var found = "NON TROUVÉE"
         if let pluginsURL = Bundle.main.builtInPlugInsURL,
            let contents = try? FileManager.default.contentsOfDirectory(
                at: pluginsURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) {
@@ -104,20 +105,22 @@ class ViewController: UIViewController {
                    let ext = info["NSExtension"] as? [String: Any],
                    let point = ext["NSExtensionPointIdentifier"] as? String,
                    point == "com.apple.callkit.call-directory",
-                   let bundleID = bundle.bundleIdentifier {
-                    return bundleID
+                   let bid = bundle.bundleIdentifier {
+                    found = bid
+                    break
                 }
             }
         }
-        // Fallback
-        let main = Bundle.main.bundleIdentifier ?? "com.bcs.incomingBlocker"
-        return main + ".CallDirectoryHandler"
+        // Affiche en debug
+        DispatchQueue.main.async { self.debugLabel.text = "ExtID: \(found)" }
+        return found
     }
 
     private func checkStatus() {
+        let extID = extensionBundleID()
         CXCallDirectoryManager.sharedInstance.getEnabledStatusForExtension(
-            withIdentifier: extensionBundleID()
-        ) { status, _ in
+            withIdentifier: extID
+        ) { status, error in
             DispatchQueue.main.async {
                 switch status {
                 case .enabled:
@@ -125,11 +128,12 @@ class ViewController: UIViewController {
                     self.button.setTitle("🔄 Recharger le blocage", for: .normal)
                 case .disabled:
                     self.setStatus(
-                        "⚠️ Active d'abord le bloqueur :\nRéglages > Téléphone > Blocage d'appels et identification > CallBlocker",
+                        "⚠️ Active dans :\nRéglages → Téléphone\n→ Blocage d'appels et identification\n→ active CallBlocker",
                         color: .systemOrange
                     )
                 default:
-                    self.setStatus("Vérifie le statut...", color: .gray)
+                    let code = (error as? NSError)?.code ?? -1
+                    self.setStatus("❓ Statut inconnu (err code: \(code))", color: .gray)
                 }
             }
         }
@@ -138,26 +142,26 @@ class ViewController: UIViewController {
     @objc private func blockTapped() {
         button.isEnabled = false
         spinner.startAnimating()
-        setStatus("Chargement de 1 000 000 numéros\n(peut prendre 10-30s)...", color: .systemYellow)
-        progressLabel.text = ""
+        setStatus("Rechargement en cours...", color: .systemYellow)
 
+        let extID = extensionBundleID()
         CXCallDirectoryManager.sharedInstance.reloadExtension(
-            withIdentifier: extensionBundleID()
+            withIdentifier: extID
         ) { error in
             DispatchQueue.main.async {
                 self.spinner.stopAnimating()
                 self.button.isEnabled = true
                 if let error = error {
-                    let code = (error as NSError).code
+                    let nsErr = error as NSError
+                    // Codes CallKit : 1=noExtensionFound 2=loadingInterrupted 3=entriesOutOfOrder
+                    // 4=duplicateEntries 5=maxExceeded 6=disabled 7=loading 8=unexpectedIncremental
                     self.setStatus(
-                        "❌ Erreur (code \(code))\n→ Active d'abord le bloqueur dans\nRéglages > Téléphone > Blocage d'appels",
+                        "❌ Erreur code \(nsErr.code)\n\(nsErr.localizedDescription)\n→ Active d'abord dans Réglages",
                         color: .systemRed
                     )
-                    self.progressLabel.text = error.localizedDescription
                 } else {
-                    self.setStatus("✅ 1 000 000 numéros bloqués !", color: .systemGreen)
-                    self.button.setTitle("🔄 Recharger le blocage", for: .normal)
-                    self.progressLabel.text = ""
+                    self.setStatus("✅ 1000 numéros bloqués !", color: .systemGreen)
+                    self.button.setTitle("🔄 Recharger", for: .normal)
                 }
             }
         }
@@ -166,5 +170,15 @@ class ViewController: UIViewController {
     private func setStatus(_ text: String, color: UIColor) {
         statusLabel.text = text
         statusLabel.textColor = color
+    }
+}
+
+// Helper pour monospacedSystemFont en iOS 12
+private extension UIFont {
+    static func monospacedSystemFont(ofSize size: CGFloat, size _: CGFloat) -> UIFont {
+        if #available(iOS 13.0, *) {
+            return UIFont.monospacedSystemFont(ofSize: size, weight: .regular)
+        }
+        return UIFont(name: "Courier", size: size) ?? .systemFont(ofSize: size)
     }
 }
